@@ -1,16 +1,26 @@
-# React + Vite
+# ⚡ Modern React Pokédex (Vite + Tailwind v4)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A high-performance, interactive Pokédex application built with **React 18** and **Tailwind CSS v4**. This project features real-time data fetching from the PokeAPI, advanced filtering, and a custom "Pokéball" UI design.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+* **Dynamic Type Filtering:** Instantly filter Pokémon by their elemental types (Fire, Water, Grass, etc.).
+* **Catchy Search UX:** Custom "Empty State" featuring a confused Psyduck when no results are found.
+* **Pokéball UI Modal:** A custom-engineered modal that mimics a Pokéball, displaying stats, abilities, and dynamic type-based coloring.
+* **Interactive Audio:** Click on Pokémon sprites to hear their official in-game audio cries.
+* **Optimized Performance:** Uses Skeleton Loaders to prevent layout shifts and smooth out data transitions.
+* **UX Enhancements:** Includes a floating "Back to Top" Pokéball button for easy navigation through long lists.
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* **Frontend:** React 18 (Hooks, Functional Components)
+* **Build Tool:** Vite
+* **Styling:** Tailwind CSS v4 (using the new @theme engine)
+* **API:** [PokeAPI](https://pokeapi.co/)
+* **Typography:** Poppins (Google Fonts)
 
-## Expanding the ESLint configuration
+## 📦 Installation & Setup
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/YOUR_USERNAME/pokedex-react.git](https://github.com/YOUR_USERNAME/pokedex-react.git)
