@@ -62,7 +62,6 @@ export default function PokemonCard({ pokemon, onClick }) {
         loading="lazy"
       />
       <h2 className="text-xl font-semibold capitalize">{pokemon.name}</h2>
-      <p className="text-gray-500 text-sm mt-1">#{id.padStart(3, '0')}</p>
     </div>
   );
 }

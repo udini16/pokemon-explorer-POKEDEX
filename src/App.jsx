@@ -9,9 +9,31 @@ const pokemonTypes = [
   'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'
 ];
 
+// CHANGED: We now use the soft pastel colors to perfectly match your cards!
+const typeColors = {
+  normal: '#f3f4f6',   
+  fire: '#fee2e2',     
+  water: '#dbeafe',    
+  electric: '#fef3c7', 
+  grass: '#dcfce7',    
+  ice: '#e0f2fe',      
+  fighting: '#ffedd5', 
+  poison: '#f3e8ff',   
+  ground: '#fef08a',   
+  flying: '#e0e7ff',   
+  psychic: '#fce7f3',  
+  bug: '#ecfccb',      
+  rock: '#ffedd5',     
+  ghost: '#ede9fe',    
+  dragon: '#c7d2fe',   
+  dark: '#f3f4f6',     
+  steel: '#f1f5f9',    
+  fairy: '#fbcfe8',    
+};
+
 export default function App() {
   const [pokemons, setPokemons] = useState([]);
-  const [offset, setOffset] = useState(0);
+  const [offset, setOffset] = useState(0); 
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchedPokemon, setSearchedPokemon] = useState(null);
@@ -20,22 +42,18 @@ export default function App() {
   const [selectedType, setSelectedType] = useState('all');
   const [showBackToTop, setShowBackToTop] = useState(false);
 
-
   useEffect(() => {
     const handleScroll = () => {
-      // Show the button if the user scrolls down 300px
       if (window.scrollY > 300) {
         setShowBackToTop(true);
       } else {
         setShowBackToTop(false);
       }
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // NEW: Function to smoothly scroll back up
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -46,19 +64,24 @@ export default function App() {
       const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=20&offset=${currentOffset}`);
       const data = await res.json();
       
-      // FIX: Filter out duplicates to prevent React Strict Mode bugs!
-      setPokemons(prev => {
-        const newUniquePokemons = data.results.filter(
-          (newPoke) => !prev.some((existingPoke) => existingPoke.name === newPoke.name)
-        );
-        return [...prev, ...newUniquePokemons];
-      });
+      setPokemons(data.results);
+      setOffset(currentOffset);
       
-      setOffset(currentOffset + 20);
+      window.scrollTo({ top: 400, behavior: 'smooth' });
     } catch (err) {
       setError("Failed to load Pokémon list.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleNextPage = () => {
+    fetchPokemons(offset + 20);
+  };
+
+  const handlePrevPage = () => {
+    if (offset >= 20) {
+      fetchPokemons(offset - 20);
     }
   };
 
@@ -111,7 +134,6 @@ export default function App() {
       const data = await res.json();
       setSearchedPokemon([{ name: data.name, url: `https://pokeapi.co/api/v2/pokemon/${data.id}/` }]);
     } catch (err) {
-      // API throws error for "charzard", we catch it and set an empty array
       setSearchedPokemon([]);
       setError(err.message);
     } finally {
@@ -120,9 +142,6 @@ export default function App() {
   };
 
   const displayList = searchedPokemon !== null ? searchedPokemon : pokemons;
-
-  // We check if the user is specifically searching so we don't hide the grid 
-  // when they just click "Load More"
   const isCurrentlySearching = loading && searchQuery !== '' && searchedPokemon === null;
 
   return (
@@ -141,8 +160,7 @@ export default function App() {
           <h1 
             className="text-5xl md:text-6xl font-black text-center tracking-widest mt-16 md:mt-4 mb-8 cursor-pointer hover:scale-105 transition-transform"
             onClick={() => {
-               // Clicking the title resets the app to the home state
-               setSearchQuery(''); setSearchedPokemon(null); setSelectedType('all');
+               setSearchQuery(''); setSearchedPokemon(null); setSelectedType('all'); fetchPokemons(0);
             }}
             style={{ 
               color: '#ffcb05', 
@@ -196,27 +214,41 @@ export default function App() {
       <main className="max-w-7xl mx-auto px-6 pt-16 pb-12">
         
         <div className="flex gap-3 overflow-x-auto py-4 mb-8 no-scrollbar scroll-smooth">
-          {pokemonTypes.map((type) => (
-            <button
-              key={type}
-              onClick={() => fetchByType(type)}
-              className={`px-5 py-2 rounded-full font-bold capitalize whitespace-nowrap border-2 transition-all cursor-pointer ${
-                selectedType === type
-                  ? 'bg-gray-900 text-white border-gray-900 shadow-md scale-105'
-                  : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400 hover:text-gray-800'
-              }`}
-            >
-              {type}
-            </button>
-          ))}
+          {pokemonTypes.map((type) => {
+            const isSelected = selectedType === type;
+            const bgColor = typeColors[type] || typeColors.normal;
+
+            return (
+              <button
+                key={type}
+                onClick={() => fetchByType(type)}
+                // Removed 'text-white' from the selected state here so we can control it in the style tag
+                className={`px-5 py-2 rounded-full font-bold capitalize whitespace-nowrap border-2 transition-all cursor-pointer ${
+                  isSelected
+                    ? 'shadow-md scale-105'
+                    : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400 hover:text-gray-800'
+                }`}
+                style={
+                  isSelected 
+                    ? { 
+                        // If 'all' is selected, make it black. Otherwise use the pastel color.
+                        backgroundColor: type === 'all' ? '#111827' : bgColor, 
+                        borderColor: type === 'all' ? '#111827' : bgColor,
+                        // If 'all' is selected, use white text. Otherwise use dark text so it's readable on pastels.
+                        color: type === 'all' ? '#ffffff' : '#111827'
+                      } 
+                    : {}
+                }
+              >
+                {type}
+              </button>
+            );
+          })}
         </div>
 
-        {/* REBUILT, BULLETPROOF CONDITIONAL RENDERING */}
         {isCurrentlySearching || (loading && pokemons.length === 0) ? (
           
-          /* THE NEW SKELETON GRID */
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {/* We create a temporary array of 20 empty items to map over and draw 20 skeletons! */}
             {Array.from({ length: 20 }).map((_, index) => (
               <PokemonSkeleton key={`skeleton-${index}`} />
             ))}
@@ -224,7 +256,6 @@ export default function App() {
 
         ) : !loading && searchedPokemon !== null && searchedPokemon.length === 0 ? (
           
-          /* THE EMPTY STATE (Psyduck) */
           <div className="flex flex-col items-center justify-center py-16 px-4 text-center animate-fade-in">
             <img 
               src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/54.png" 
@@ -248,27 +279,39 @@ export default function App() {
 
         ) : (
           
-          /* THE MAIN GRID - Fixed responsive classes to prevent single column collapse */
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {displayList.map((p, index) => (
-              <PokemonCard 
-                // FIX: Added the index to the key so it's always 100% unique
-                key={`${p.name}-${index}`} 
-                pokemon={p} 
-                onClick={(id) => setSelectedId(id)} 
-              />
-            ))}
+            {displayList.map((p) => {
+              const id = p.url.split('/').filter(Boolean).pop();
+              return (
+                <PokemonCard 
+                  key={id} 
+                  pokemon={p} 
+                  onClick={(id) => setSelectedId(id)} 
+                />
+              );
+            })}
           </div>
         )}
 
-        {/* Load More Button - Only shows if we aren't loading and are on the default 'all' view */}
         {searchedPokemon === null && selectedType === 'all' && displayList.length > 0 && !loading && (
-          <div className="mt-16 flex justify-center">
+          <div className="mt-16 flex justify-center items-center gap-4 sm:gap-8">
             <button
-              onClick={() => fetchPokemons(offset)}
-              className="bg-gray-900 text-white px-10 py-4 rounded-full font-black text-lg border-4 border-gray-900 shadow-[0_6px_0_rgb(0,0,0)] hover:shadow-[0_2px_0_rgb(0,0,0)] hover:translate-y-1 transition-all cursor-pointer"
+              onClick={handlePrevPage}
+              disabled={offset === 0}
+              className="bg-white text-gray-900 px-6 sm:px-8 py-3 rounded-full font-black text-sm sm:text-lg border-4 border-gray-900 shadow-[0_6px_0_rgb(17,24,39)] hover:shadow-[0_2px_0_rgb(17,24,39)] hover:translate-y-1 disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[0_6px_0_rgb(17,24,39)] transition-all cursor-pointer"
             >
-              LOAD MORE
+              &larr; PREV
+            </button>
+            
+            <span className="font-black text-lg sm:text-xl text-gray-700 bg-gray-200 px-6 py-2 rounded-full border-2 border-gray-300">
+              Page {Math.floor(offset / 20) + 1}
+            </span>
+
+            <button
+              onClick={handleNextPage}
+              className="bg-gray-900 text-white px-6 sm:px-8 py-3 rounded-full font-black text-sm sm:text-lg border-4 border-gray-900 shadow-[0_6px_0_rgb(0,0,0)] hover:shadow-[0_2px_0_rgb(0,0,0)] hover:translate-y-1 transition-all cursor-pointer"
+            >
+              NEXT &rarr;
             </button>
           </div>
         )}
@@ -281,33 +324,18 @@ export default function App() {
         />
       )}
 
-      
-    {/* Your PokemonModal component is right here */}
-      {selectedId && (
-        <PokemonModal 
-          pokemonId={selectedId} 
-          onClose={() => setSelectedId(null)} 
-        />
-      )}
-
-      {/* NEW: Floating Back to Top Pokeball Button */}
       {showBackToTop && (
         <button
           onClick={scrollToTop}
-          // The group class lets us animate the inner parts when hovering!
           className="fixed bottom-8 right-8 w-14 h-14 border-[3px] border-gray-900 rounded-full shadow-2xl flex items-center justify-center z-40 hover:scale-110 hover:-translate-y-2 transition-all duration-300 cursor-pointer group overflow-hidden animate-fade-in"
         >
-          {/* Top red half */}
           <div className="absolute top-0 w-full h-1/2 bg-red-600"></div>
-          {/* Bottom white half */}
           <div className="absolute bottom-0 w-full h-1/2 bg-white"></div>
-          {/* Thick black center line */}
           <div className="absolute w-full h-[6px] bg-gray-900"></div>
-          {/* Center clasp */}
           <div className="absolute w-5 h-5 bg-white border-[3px] border-gray-900 rounded-full shadow-inner group-hover:bg-gray-200 transition-colors"></div>
         </button>
       )}
 
-    </div> // <-- This is the final closing div of your App!
+    </div>
   );
 }
