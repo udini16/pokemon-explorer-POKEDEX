@@ -14,6 +14,15 @@ A high-performance, interactive Pokédex application built with **React 18** and
 * **Pagination System:** Replaced standard infinite scrolling with a clean, state-driven page navigation system for better UX.
 * **Dynamic Type Badges:** UI elements automatically inherit the official hex colors of their corresponding Pokémon types.
 
+
+## 🧠 Design & Technical Decisions
+
+* **Modal vs. Dedicated Pages:** I opted for a Modal-based architecture (Popup Cards) rather than routing to new pages. This preserves the user's current search state and scroll position, creating a frictionless, app-like browsing experience.
+* **State-Driven Pagination:** Instead of infinite scrolling, which can cause severe DOM lag with high-resolution images, I implemented strict 20-item pagination. This ensures the app remains lightweight and performant.
+* **Chained API Resolution:** The PokeAPI separates base data and species data. I wrote a custom `while` loop to cleanly traverse the deeply nested `evolves_to` JSON tree, combining multiple API endpoints into a single, cohesive UI component.
+* **Unique Key Generation:** To prevent React reconciliation bugs and animation lag during re-renders, I extracted the unique Pokémon IDs directly from the API URLs to serve as strict unique keys for the list mapping.
+
+
 ## 🛠️ Tech Stack
 
 * **Frontend:** React 18 (Hooks, Functional Components)
