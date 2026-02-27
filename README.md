@@ -10,6 +10,9 @@ A high-performance, interactive Pokédex application built with **React 18** and
 * **Interactive Audio:** Click on Pokémon sprites to hear their official in-game audio cries.
 * **Optimized Performance:** Uses Skeleton Loaders to prevent layout shifts and smooth out data transitions.
 * **UX Enhancements:** Includes a floating "Back to Top" Pokéball button for easy navigation through long lists.
+* **Evolution Chains:** Utilizes chained API calls to map and display full, multi-stage Pokémon evolutionary lines side-by-side.
+* **Pagination System:** Replaced standard infinite scrolling with a clean, state-driven page navigation system for better UX.
+* **Dynamic Type Badges:** UI elements automatically inherit the official hex colors of their corresponding Pokémon types.
 
 ## 🛠️ Tech Stack
 
